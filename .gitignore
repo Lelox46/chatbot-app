@@ -1,0 +1,8 @@
+# Ignoriere virtuelle Umgebung
+venv/
+.vs/
+__pycache__/
+*.pyc
+
+# Optional: alles von Langflow
+langflow/
