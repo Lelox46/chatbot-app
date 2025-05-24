@@ -1,12 +1,14 @@
 import streamlit as st
-import sys, os
+import os
+import sys
 import uuid
-from dotenv import load_dotenv
-from langflow.load import run_flow_from_json
 import time
 import base64
+from bitcoin_chatbot import build_chain, FRAGENKATALOG  # Dein umgewandelter Langflow-Flow
 
-# === Schritt 1: Sicherer Asset-Zugriff für .exe ===
+# ──────────────────────────────────────────────────────────────────────────
+# Asset-Zugriff (für .exe-Kompatibilität optional)
+# ──────────────────────────────────────────────────────────────────────────
 if getattr(sys, 'frozen', False):
     base_path = sys._MEIPASS
 else:
@@ -15,27 +17,9 @@ else:
 def get_asset_path(rel_path):
     return os.path.join(base_path, rel_path)
 
-# === ===
-
-load_dotenv()
-
-TWEAKS = {
-    "ChatInput-6Eftk": {}, "ParseData-dG9Hf": {}, "Prompt-GZMeu": {},
-    "SplitText-d6dCS": {}, "ChatOutput-6cPPz": {}, "AstraDB-gN9Qf": {},
-    "AstraDB-kam8Q": {}, "OllamaModel-sLFkE": {}, "OllamaEmbeddings-nwFwb": {},
-    "OllamaEmbeddings-Z2oCq": {}, "AstraDBChatMemory-5wMF2": {},
-    "Memory-exuRZ": {}, "StoreMessage-mnHis": {}, "AstraDB-3K50i": {},
-    "ParseData-CnnEM": {}, "OllamaEmbeddings-KGDSK": {}, "OpenAIModel-FzVzM": {},
-    "File-BInQn": {}
-}
-
-# Generate a unique user ID
-user_id = str(uuid.uuid4())
-FLOW_PATH = get_asset_path("langflow_rag_openai_cloud.json")
-
-st.set_page_config(page_title="Bitcoin Chatbot")
-
-# Helpers for background images
+# ──────────────────────────────────────────────────────────────────────────
+# Style: Hintergrundbilder & Chat CSS
+# ──────────────────────────────────────────────────────────────────────────
 def get_base64_image(path):
     with open(path, "rb") as img_file:
         return base64.b64encode(img_file.read()).decode()
@@ -53,7 +37,6 @@ def set_background(png_file):
         </style>
     """, unsafe_allow_html=True)
 
-# Call background images
 set_background("assets/bitcoin_bg.png")
 bg2 = get_base64_image(get_asset_path("assets/bg.png"))
 st.markdown(f"""
@@ -67,7 +50,7 @@ st.markdown(f"""
     </style>
 """, unsafe_allow_html=True)
 
-# Chat bubble styling
+# Chat-Bubble Styles
 st.markdown("""
 <style>
 .chat-bubble {
@@ -85,18 +68,36 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
+# ──────────────────────────────────────────────────────────────────────────
+# UI Titel + Banner
+# ──────────────────────────────────────────────────────────────────────────
+st.set_page_config(page_title="Bitcoin Chatbot")
 st.markdown("<h1 style='text-align:center;'>Bitcoin Chatbot</h1>", unsafe_allow_html=True)
 st.image(get_asset_path("assets/bitcoin_banner.jpg"), use_container_width=True)
 st.markdown("<h3 style='text-align:center;'>Lerne alles über Bitcoin! Stell mir einfach eine Frage!</h3>", unsafe_allow_html=True)
 st.markdown("---")
 
-# Session state setup
+# ──────────────────────────────────────────────────────────────────────────
+# Session-State Setup
+# ──────────────────────────────────────────────────────────────────────────
 for key in ["messages","user_just_sent","user_input_value",
             "bot_typing","pending_bot_response","awaiting_typing_display"]:
     if key not in st.session_state:
         st.session_state[key] = False if "typing" in key or "just_sent" in key or "pending" in key or "awaiting" in key else []
 
-# Display chat history
+# Initialisiere die Chain einmal pro Session
+if "chain" not in st.session_state:
+    # ❗ Stelle sicher, dass diese Werte in .streamlit/secrets.toml gesetzt sind
+    st.session_state.chain = build_chain(
+        token=st.secrets["ASTRA_TOKEN"],
+        api_endpoint=st.secrets["ASTRA_API_ENDPOINT"],
+        database=st.secrets["ASTRA_DB"],
+        collection=st.secrets["ASTRA_COLLECTION"]
+    )
+
+# ──────────────────────────────────────────────────────────────────────────
+# Verlauf anzeigen
+# ──────────────────────────────────────────────────────────────────────────
 with st.container():
     for sender, message in st.session_state.messages:
         css = "bot" if sender == "Bot" else "user"
@@ -107,31 +108,34 @@ with st.container():
     if st.session_state.bot_typing and not st.session_state.pending_bot_response:
         st.markdown("<div class='chat-bubble typing'><strong>Thinking...</strong></div>", unsafe_allow_html=True)
 
-# Phase 1.5: show "Thinking..." then rerun
+# ──────────────────────────────────────────────────────────────────────────
+# PHASE 1.5: Warte auf "Thinking..." Anzeige, dann rerun
+# ──────────────────────────────────────────────────────────────────────────
 if st.session_state.awaiting_typing_display:
     st.session_state.bot_typing = True
     st.session_state.awaiting_typing_display = False
     st.session_state.user_just_sent = True
     st.rerun()
 
-# Phase 2: generate response
+# ──────────────────────────────────────────────────────────────────────────
+# PHASE 2: Antwort generieren über LangChain
+# ──────────────────────────────────────────────────────────────────────────
 if st.session_state.user_just_sent:
     st.session_state.user_just_sent = False
     try:
-        result = run_flow_from_json(
-            flow=FLOW_PATH,
-            input_value=st.session_state.user_input_value,
-            session_id="streamlit-user-session",
-            fallback_to_env_vars=True,
-            tweaks=TWEAKS
-        )
-        st.session_state.pending_bot_response = result[0].outputs[0].outputs["message"]["message"]
+        result = st.session_state.chain({
+            "question": st.session_state.user_input_value,
+            "fragenkatalog": FRAGENKATALOG
+        })
+        st.session_state.pending_bot_response = result["answer"]
     except Exception as e:
-        st.session_state.messages.append(("Bot", f"Error: {e}"))
+        st.session_state.messages.append(("Bot", f"Fehler: {e}"))
         st.session_state.bot_typing = False
     st.rerun()
 
-# Phase 3: animate bot response
+# ──────────────────────────────────────────────────────────────────────────
+# PHASE 3: "Typing" animieren und anzeigen
+# ──────────────────────────────────────────────────────────────────────────
 if st.session_state.pending_bot_response:
     st.session_state.bot_typing = False
     typed_resp = ""
@@ -145,11 +149,12 @@ if st.session_state.pending_bot_response:
     placeholder.empty()
     st.rerun()
 
-# Input CSS
+# ──────────────────────────────────────────────────────────────────────────
+# Eingabefeld
+# ──────────────────────────────────────────────────────────────────────────
 st.markdown("""
 <style>
 :root { --chat-h: 40px; }
-
 div[data-testid="stForm"] {
   border: none !important;
   box-shadow: none !important;
@@ -196,15 +201,10 @@ div[data-testid="stButton"] > button {
 </style>
 """, unsafe_allow_html=True)
 
-# Input-Feld mit Submit-Button
 with st.form(key="chat_form", clear_on_submit=True):
     col1, col2 = st.columns([0.93, 0.07])
     with col1:
-        user_input = st.text_input(
-            label="", key="input_box",
-            placeholder="Ask me something…",
-            label_visibility="collapsed"
-        )
+        user_input = st.text_input("", key="input_box", placeholder="Frag mich was über Bitcoin…", label_visibility="collapsed")
     with col2:
         send = st.form_submit_button("➤")
 

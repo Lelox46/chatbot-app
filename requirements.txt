@@ -2,4 +2,8 @@ streamlit
 openai
 python-dotenv
 langchain
-langflow
+langchain-openai
+langchain-community
+langchain-astradb
+pypdf
+tiktoken
