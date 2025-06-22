@@ -1,16 +1,22 @@
 import streamlit as st
 import os
 import sys
-import uuid
 import time
 import base64
-from bitcoin_chatbot import build_chain, FRAGENKATALOG  # Dein umgewandelter Langflow-Flow
+import openai
 
-st.set_page_config(page_title="Bitcoin Chatbot")
+# 🔐 API-Key laden
+openai.api_key = st.secrets["openai"]["api_key"]
 
-# ──────────────────────────────────────────────────────────────────────────
-# Asset-Zugriff (für .exe-Kompatibilität optional)
-# ──────────────────────────────────────────────────────────────────────────
+# 🧠 System-Prompt
+SYSTEM_PROMPT = """
+Du bist ein hilfreicher Chatbot, der alle Fragen rund um Bitcoin einfach, verständlich und sachlich korrekt beantwortet.
+Vermeide Fachjargon und erkläre Begriffe wenn nötig.
+"""
+
+# ────────────────────────────────────────────────
+# Asset-Zugriff für Hintergrundbilder
+# ────────────────────────────────────────────────
 if getattr(sys, 'frozen', False):
     base_path = sys._MEIPASS
 else:
@@ -19,9 +25,6 @@ else:
 def get_asset_path(rel_path):
     return os.path.join(base_path, rel_path)
 
-# ──────────────────────────────────────────────────────────────────────────
-# Style: Hintergrundbilder & Chat CSS
-# ──────────────────────────────────────────────────────────────────────────
 def get_base64_image(path):
     with open(path, "rb") as img_file:
         return base64.b64encode(img_file.read()).decode()
@@ -52,7 +55,9 @@ st.markdown(f"""
     </style>
 """, unsafe_allow_html=True)
 
-# Chat-Bubble Styles
+# ────────────────────────────────────────────────
+# Chat-Style
+# ────────────────────────────────────────────────
 st.markdown("""
 <style>
 .chat-bubble {
@@ -70,73 +75,66 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# ──────────────────────────────────────────────────────────────────────────
-# UI Titel + Banner
-# ──────────────────────────────────────────────────────────────────────────
+# ────────────────────────────────────────────────
+# UI Titel
+# ────────────────────────────────────────────────
+st.set_page_config(page_title="Bitcoin Chatbot")
 st.markdown("<h1 style='text-align:center;'>Bitcoin Chatbot</h1>", unsafe_allow_html=True)
 st.image(get_asset_path("assets/bitcoin_banner.jpg"), use_container_width=True)
 st.markdown("<h3 style='text-align:center;'>Lerne alles über Bitcoin! Stell mir einfach eine Frage!</h3>", unsafe_allow_html=True)
 st.markdown("---")
 
-# ──────────────────────────────────────────────────────────────────────────
+# ────────────────────────────────────────────────
 # Session-State Setup
-# ──────────────────────────────────────────────────────────────────────────
-for key in ["messages","user_just_sent","user_input_value",
-            "bot_typing","pending_bot_response","awaiting_typing_display"]:
+# ────────────────────────────────────────────────
+if "messages" not in st.session_state:
+    st.session_state.messages = [{"role": "system", "content": SYSTEM_PROMPT}]
+for key in ["user_just_sent","user_input_value","bot_typing","pending_bot_response","awaiting_typing_display"]:
     if key not in st.session_state:
-        st.session_state[key] = False if "typing" in key or "just_sent" in key or "pending" in key or "awaiting" in key else []
+        st.session_state[key] = False
 
-# Initialisiere die Chain einmal pro Session
-if "chain" not in st.session_state:
-    # ❗ Stelle sicher, dass diese Werte in .streamlit/secrets.toml gesetzt sind
-    st.session_state.chain = build_chain(
-        token=st.secrets["ASTRA_TOKEN"],
-        api_endpoint=st.secrets["ASTRA_API_ENDPOINT"],
-        database=st.secrets["ASTRA_DB"],
-        collection=st.secrets["ASTRA_COLLECTION"]
-    )
-
-# ──────────────────────────────────────────────────────────────────────────
+# ────────────────────────────────────────────────
 # Verlauf anzeigen
-# ──────────────────────────────────────────────────────────────────────────
+# ────────────────────────────────────────────────
 with st.container():
-    for sender, message in st.session_state.messages:
+    for msg in st.session_state.messages[1:]:
+        sender = "Bot" if msg["role"] == "assistant" else "User"
         css = "bot" if sender == "Bot" else "user"
         st.markdown(
-            f"<div class='chat-bubble {css}'><strong>{sender}:</strong><br>{message}</div>",
+            f"<div class='chat-bubble {css}'><strong>{sender}:</strong><br>{msg['content']}</div>",
             unsafe_allow_html=True
         )
     if st.session_state.bot_typing and not st.session_state.pending_bot_response:
         st.markdown("<div class='chat-bubble typing'><strong>Thinking...</strong></div>", unsafe_allow_html=True)
 
-# ──────────────────────────────────────────────────────────────────────────
-# PHASE 1.5: Warte auf "Thinking..." Anzeige, dann rerun
-# ──────────────────────────────────────────────────────────────────────────
+# ────────────────────────────────────────────────
+# PHASE 1.5: Reaktion auf "Thinking..."
+# ────────────────────────────────────────────────
 if st.session_state.awaiting_typing_display:
     st.session_state.bot_typing = True
     st.session_state.awaiting_typing_display = False
     st.session_state.user_just_sent = True
     st.rerun()
 
-# ──────────────────────────────────────────────────────────────────────────
-# PHASE 2: Antwort generieren über LangChain
-# ──────────────────────────────────────────────────────────────────────────
+# ────────────────────────────────────────────────
+# PHASE 2: Antwort generieren über OpenAI
+# ────────────────────────────────────────────────
 if st.session_state.user_just_sent:
     st.session_state.user_just_sent = False
     try:
-        result = st.session_state.chain({
-            "question": st.session_state.user_input_value,
-            "fragenkatalog": FRAGENKATALOG
-        })
-        st.session_state.pending_bot_response = result["answer"]
+        response = openai.ChatCompletion.create(
+            model="gpt-3.5-turbo",
+            messages=st.session_state.messages
+        )
+        st.session_state.pending_bot_response = response["choices"][0]["message"]["content"]
     except Exception as e:
-        st.session_state.messages.append(("Bot", f"Fehler: {e}"))
+        st.session_state.messages.append({"role": "assistant", "content": f"Fehler: {e}"})
         st.session_state.bot_typing = False
     st.rerun()
 
-# ──────────────────────────────────────────────────────────────────────────
-# PHASE 3: "Typing" animieren und anzeigen
-# ──────────────────────────────────────────────────────────────────────────
+# ────────────────────────────────────────────────
+# PHASE 3: "Typing"-Animation
+# ────────────────────────────────────────────────
 if st.session_state.pending_bot_response:
     st.session_state.bot_typing = False
     typed_resp = ""
@@ -145,14 +143,14 @@ if st.session_state.pending_bot_response:
         typed_resp += ch
         placeholder.markdown(f"<div class='chat-bubble typing'><strong>Bot:</strong><br>{typed_resp}</div>", unsafe_allow_html=True)
         time.sleep(0.015)
-    st.session_state.messages.append(("Bot", st.session_state.pending_bot_response))
+    st.session_state.messages.append({"role": "assistant", "content": st.session_state.pending_bot_response})
     st.session_state.pending_bot_response = None
     placeholder.empty()
     st.rerun()
 
-# ──────────────────────────────────────────────────────────────────────────
+# ────────────────────────────────────────────────
 # Eingabefeld
-# ──────────────────────────────────────────────────────────────────────────
+# ────────────────────────────────────────────────
 st.markdown("""
 <style>
 :root { --chat-h: 40px; }
@@ -210,7 +208,8 @@ with st.form(key="chat_form", clear_on_submit=True):
         send = st.form_submit_button("➤")
 
     if send and user_input:
-        st.session_state.messages.append(("User", user_input))
+        st.session_state.messages.append({"role": "user", "content": user_input})
         st.session_state.user_input_value = user_input
         st.session_state.awaiting_typing_display = True
         st.rerun()
+
