@@ -7,3 +7,5 @@ langchain-community
 langchain-astradb
 pypdf
 tiktoken
+cassio
+cassandra-driver
