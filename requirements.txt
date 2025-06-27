@@ -9,3 +9,4 @@ pypdf
 tiktoken
 cassio
 cassandra-driver
+openai>=1.0.0
