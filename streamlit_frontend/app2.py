@@ -122,6 +122,7 @@ if st.session_state.awaiting_typing_display:
 if st.session_state.user_just_sent:
     st.session_state.user_just_sent = False
     try:
+        client = openai.OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
         response = client.chat.completions.create(
             model="gpt-3.5-turbo",
             messages=st.session_state.messages
