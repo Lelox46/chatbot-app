@@ -5,10 +5,10 @@ import time
 import base64
 import openai
 
-# 🔐 API-Key laden
-openai.api_key = st.secrets["openai"]["api_key"]
+#API-Key laden
+openai.api_key = st.secrets["OPENAI_API_KEY"]
 
-# 🧠 System-Prompt
+#System-Prompt
 SYSTEM_PROMPT = """
 Du bist ein hilfreicher Chatbot, der alle Fragen rund um Bitcoin einfach, verständlich und sachlich korrekt beantwortet.
 Vermeide Fachjargon und erkläre Begriffe wenn nötig.
