@@ -127,7 +127,7 @@ if st.session_state.user_just_sent:
             model="gpt-3.5-turbo",
             messages=st.session_state.messages
         )
-        st.session_state.pending_bot_response = response["choices"][0]["message"]["content"]
+        st.session_state.pending_bot_response = response.choices[0].message.content
     except Exception as e:
         st.session_state.messages.append({"role": "assistant", "content": f"Fehler: {e}"})
         st.session_state.bot_typing = False
