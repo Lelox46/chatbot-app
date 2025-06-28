@@ -217,6 +217,6 @@ with st.form(key="chat_form", clear_on_submit=True):
 
 st.markdown("---")
 st.success("✅ Fertig mit dem Chatbot?")
-st.page_link("pages/chatbot_survey.py", label="Zum Fragebogen (Chatbot)")
+st.page_link("streamlit_frontend/chatbot_survey.py", label="Zum Fragebogen (Chatbot)")
 
 
