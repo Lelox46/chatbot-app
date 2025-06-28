@@ -11,6 +11,6 @@ Wenn du fertig bist, geht’s weiter:
 """)
 
 if st.session_state.gruppe == "quizlet_zuerst":
-    st.page_link("pages/1_Chatbot.py", label="Jetzt zum Chatbot")
+    st.page_link("pages/app2.py", label="Jetzt zum Chatbot")
 else:
-    st.page_link("pages/5_Abschluss.py", label="Zur Abschluss-Seite")
+    st.page_link("pages/conclusion.py", label="Zur Abschluss-Seite")
