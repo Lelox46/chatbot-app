@@ -217,6 +217,10 @@ with st.form(key="chat_form", clear_on_submit=True):
 
 st.markdown("---")
 st.success("✅ Fertig mit dem Chatbot?")
-st.page_link("streamlit_frontend/chatbot_survey.py", label="Zum Fragebogen (Chatbot)")
+st.markdown("Bitte fülle nun den kurzen Fragebogen aus, um deine Erfahrung zu bewerten:")
+
+# Microsoft Forms Link einfügen
+st.markdown("👉 [**Weiter zum Fragebogen (Chatbot)**](https://forms.office.com/dein-link)")
+
 
 
