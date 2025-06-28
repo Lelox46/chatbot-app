@@ -214,3 +214,9 @@ with st.form(key="chat_form", clear_on_submit=True):
         st.session_state.awaiting_typing_display = True
         st.rerun()
 
+
+st.markdown("---")
+st.success("✅ Fertig mit dem Chatbot?")
+st.page_link("pages/chatbot_survey.py", label="Zum Fragebogen (Chatbot)")
+
+
