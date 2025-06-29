@@ -15,11 +15,11 @@ Vermeide Fachjargon und erkläre Begriffe wenn nötig.
 """
 
 # Immer vom Projekt-Root auf den assets-Ordner zugreifen
-BASE_DIR = os.path.dirname(os.path.dirname(__file__))  # eine Ebene über /pages/
-ASSET_DIR = os.path.join(BASE_DIR, "assets")
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))  # /pages/
+ASSET_DIR = os.path.join(BASE_DIR, "..", "assets")     # → /assets
 
 def get_asset_path(filename):
-    return os.path.join(ASSET_DIR, filename)
+    return os.path.abspath(os.path.join(ASSET_DIR, filename))
 
 def get_base64_image(path):
     with open(path, "rb") as img_file:
@@ -39,18 +39,21 @@ def set_background(png_filename):
     """, unsafe_allow_html=True)
 
 # Hintergrundbilder setzen
-set_background("bitcoin_bg.png")  # das ist PNG
-bg2 = get_base64_image(get_asset_path("bitcoin_banner.jpg"))  # das ist JPG
+set_background("bitcoin_bg.png")
+bg2 = get_base64_image(get_asset_path("bitcoin_banner.jpg"))
 st.markdown(f"""
     <style>
     [data-testid="stAppViewContainer"] > .main {{
-        background-image: url("data:image/jpeg;base64,{bg2}");  <!-- MIME-Typ angepasst! -->
+        background-image: url("data:image/png;base64,{bg2}");
         background-size: cover;
         background-repeat: no-repeat;
         background-attachment: fixed;
     }}
     </style>
 """, unsafe_allow_html=True)
+
+# Bild anzeigen (optional)
+st.image(get_asset_path("bitcoin_banner.jpg"), use_container_width=True)
 
 
 
