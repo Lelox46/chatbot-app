@@ -39,18 +39,19 @@ def set_background(png_filename):
     """, unsafe_allow_html=True)
 
 # Hintergrundbilder setzen
-set_background("bitcoin_bg.png")
-bg2 = get_base64_image(get_asset_path("bitcoin_banner.jpg"))
+set_background("bitcoin_bg.png")  # das ist PNG
+bg2 = get_base64_image(get_asset_path("bitcoin_banner.jpg"))  # das ist JPG
 st.markdown(f"""
     <style>
     [data-testid="stAppViewContainer"] > .main {{
-        background-image: url("data:image/png;base64,{bg2}");
+        background-image: url("data:image/jpeg;base64,{bg2}");  <!-- MIME-Typ angepasst! -->
         background-size: cover;
         background-repeat: no-repeat;
         background-attachment: fixed;
     }}
     </style>
 """, unsafe_allow_html=True)
+
 
 
 # ────────────────────────────────────────────────
