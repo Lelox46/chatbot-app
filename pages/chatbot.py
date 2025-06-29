@@ -52,8 +52,7 @@ st.markdown(f"""
     </style>
 """, unsafe_allow_html=True)
 
-# Bild anzeigen (optional)
-st.image(get_asset_path("bitcoin_banner.jpg"), use_container_width=True)
+
 
 
 
