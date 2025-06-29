@@ -8,7 +8,7 @@ st.title("🚀 Willkommen zur Evaluation!")
 if "gruppe" not in st.session_state:
     if st.button("🔁 Teilnahme starten"):
         st.session_state.gruppe = random.choice(["chatbot_zuerst", "quizlet_zuerst"])
-        st.experimental_rerun()
+        st.rerun()
     else:
         st.stop()  # ⛔️ Beende hier, um nichts vorzeitig zu zeigen
 
