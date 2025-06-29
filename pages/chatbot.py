@@ -82,7 +82,7 @@ st.markdown("""
 # ────────────────────────────────────────────────
 st.set_page_config(page_title="Bitcoin Chatbot")
 st.markdown("<h1 style='text-align:center;'>Bitcoin Chatbot</h1>", unsafe_allow_html=True)
-st.image(get_asset_path("streamlit_frontend/assets/bitcoin_banner.jpg"), use_container_width=True)
+st.image(get_asset_path("bitcoin_banner.jpg"), use_container_width=True)
 st.markdown("<h3 style='text-align:center;'>Lerne alles über Bitcoin! Stell mir einfach eine Frage!</h3>", unsafe_allow_html=True)
 st.markdown("---")
 
