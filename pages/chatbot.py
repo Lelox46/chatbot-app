@@ -40,7 +40,7 @@ def set_background(png_filename):
 
 # Hintergrundbilder setzen
 set_background("bitcoin_bg.png")
-bg2 = get_base64_image(get_asset_path("bitcoin_banner.png"))
+bg2 = get_base64_image(get_asset_path("bitcoin_banner.jpg"))
 st.markdown(f"""
     <style>
     [data-testid="stAppViewContainer"] > .main {{
