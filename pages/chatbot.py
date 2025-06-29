@@ -14,23 +14,19 @@ Du bist ein hilfreicher Chatbot, der alle Fragen rund um Bitcoin einfach, verst�
 Vermeide Fachjargon und erkläre Begriffe wenn nötig.
 """
 
-# ────────────────────────────────────────────────
-# Asset-Zugriff für Hintergrundbilder
-# ────────────────────────────────────────────────
-if getattr(sys, 'frozen', False):
-    base_path = sys._MEIPASS
-else:
-    base_path = os.path.dirname(__file__)
+# Immer vom Projekt-Root auf den assets-Ordner zugreifen
+BASE_DIR = os.path.dirname(os.path.dirname(__file__))  # eine Ebene über /pages/
+ASSET_DIR = os.path.join(BASE_DIR, "assets")
 
-def get_asset_path(rel_path):
-    return os.path.join(base_path, rel_path)
+def get_asset_path(filename):
+    return os.path.join(ASSET_DIR, filename)
 
 def get_base64_image(path):
     with open(path, "rb") as img_file:
         return base64.b64encode(img_file.read()).decode()
 
-def set_background(png_file):
-    bg = get_base64_image(get_asset_path(png_file))
+def set_background(png_filename):
+    bg = get_base64_image(get_asset_path(png_filename))
     st.markdown(f"""
         <style>
         [data-testid="stAppViewContainer"] {{
@@ -42,8 +38,9 @@ def set_background(png_file):
         </style>
     """, unsafe_allow_html=True)
 
-set_background("streamlit_frontend/assets/bitcoin_bg.png")
-bg2 = get_base64_image(get_asset_path("streamlit_frontend/assets/bg.png"))
+# Hintergrundbilder setzen
+set_background("bitcoin_bg.png")
+bg2 = get_base64_image(get_asset_path("bg.png"))
 st.markdown(f"""
     <style>
     [data-testid="stAppViewContainer"] > .main {{
