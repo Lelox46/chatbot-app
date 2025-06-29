@@ -3,6 +3,7 @@ import random
 
 st.set_page_config(page_title="Lernen mit KI - Evaluation")
 st.title("🚀 Willkommen zur Evaluation!")
+st.write("Vielen Dank, dass du dir kurz Zeit nimmst. Meine Bachelorarbeit beschäftigt sich mit KI als Lernmethode. In dieser Evaluation hast du die Möglichkeit einen KI-Chatbot und eine gewöhnliche Lernapp auszuprobieren und zu vergleichen. Diese Umfrage ist optimiert für PC´s, funktioniert aber auch auf dem Smartphone.")
 st.write("Bitte klick unten auf den Button um loszulegen.")
 
 # Wenn noch keine Gruppe gespeichert ist, zeige Button:
