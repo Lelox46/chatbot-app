@@ -10,4 +10,4 @@ Bitte mache nun die folgende Lektion auf Quizlet:
 Wenn du fertig bist, klicke unten weiter.
 """)
 
-st.page_link("streamlit_frontend/survey_quizlet.py", label="Zum Fragebogen (Quizlet)")
+st.page_link("streamlit_frontend/pages/survey_quizlet.py", label="Zum Fragebogen (Quizlet)")
