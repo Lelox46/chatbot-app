@@ -40,7 +40,7 @@ def set_background(png_filename):
 
 # Hintergrundbilder setzen
 set_background("bitcoin_bg.png")
-bg2 = get_base64_image(get_asset_path("bg.png"))
+bg2 = get_base64_image(get_asset_path("bitcoin_banner.png"))
 st.markdown(f"""
     <style>
     [data-testid="stAppViewContainer"] > .main {{
@@ -51,6 +51,7 @@ st.markdown(f"""
     }}
     </style>
 """, unsafe_allow_html=True)
+
 
 # ────────────────────────────────────────────────
 # Chat-Style
