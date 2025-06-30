@@ -223,7 +223,7 @@ st.markdown("Bitte fülle nun den kurzen Fragebogen aus, um deine Erfahrung zu b
 st.markdown("""
 <style>
 div.stButton > button {
-    float: right;
+    float: left;
     width: 100%;
     min-width: 200px;
     padding: 0.8em;
