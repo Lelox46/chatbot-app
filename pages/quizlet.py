@@ -12,4 +12,5 @@ Lerne mit den Karteikärtchen solange bis du ein gutes Gefühl für die Lernmeth
 Wenn du genug hast, klicke bitte unten weiter.
 """)
 
-st.page_link("pages/survey_quizlet.py", label="Zum Fragebogen (Quizlet)")
+if st.button("Zum Quizlet-Fragebogen"):
+        st.switch_page("pages/survey_quizlet.py")
