@@ -18,7 +18,8 @@ if "gruppe" not in st.session_state:
 # Jetzt: nach Zufallswahl weiterleiten
 if st.session_state.gruppe == "chatbot_zuerst":
     st.write("Beginnen wir mit dem Chatbot. Klick unten auf den Button um den Chatbot zu öffnen. Du kannst ihn für ein paar minuten testen und dann dein Feedback geben.😀")
-    st.page_link("pages/chatbot.py", label="Weiter zum Chatbot")
+    if st.button("➡️ Weiter zum Chatbot"):
+        st.switch_page("pages/chatbot.py")
 
 elif st.session_state.gruppe == "quizlet_zuerst":
     st.write("Beginnen wir mit einer Quizlet Lektion. Klick auf den Button unten um loszulegen. Du kannst anschließend kurz Feedback geben und dann gehts weiter mit dem Chatbot. 😀")
