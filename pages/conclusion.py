@@ -1,6 +1,6 @@
 import streamlit as st
 
-st.title("🎉 Danke fürs Mitmachen!")
+st.title("Noch eine letzte Sache...")
 
 st.markdown("""
 Du hast beide Lernmethoden ausprobiert und bewertet– danke dir!
