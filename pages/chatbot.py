@@ -220,8 +220,8 @@ st.markdown("---")
 st.success("✅ Fertig mit dem Chatbot?")
 st.markdown("Bitte fülle nun den kurzen Fragebogen aus, um deine Erfahrung zu bewerten:")
 
-# Microsoft Forms Link einfügen
-st.page_link("pages/survey_chatbot.py", label="Zum Fragebogen (Chatbot)")
+if st.button("Zum Chatbot-Fragebogen"):
+        st.switch_page("pages/survey_chatbot.py")
 
 
 
