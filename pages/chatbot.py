@@ -220,8 +220,26 @@ st.markdown("---")
 st.success("✅ Fertig mit dem Chatbot?")
 st.markdown("Bitte fülle nun den kurzen Fragebogen aus, um deine Erfahrung zu bewerten:")
 
+st.markdown("""
+<style>
+div.stButton > button {
+    padding: 0.6em 1.2em;
+    font-size: 1.1em;
+    font-weight: bold;
+    border-radius: 8px;
+    border: 2px solid #000;
+    background-color: #1c222b;
+    color: white;
+    cursor: pointer;
+}
+</style>
+""", unsafe_allow_html=True)
+
 if st.button("Zum Fragebogen"):
         st.switch_page("pages/survey_chatbot.py")
+
+
+
 
 
 
