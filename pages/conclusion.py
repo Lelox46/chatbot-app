@@ -3,9 +3,11 @@ import streamlit as st
 st.title("🎉 Danke fürs Mitmachen!")
 
 st.markdown("""
-Du hast beide Lernmethoden ausprobiert – danke dir!
+Du hast beide Lernmethoden ausprobiert und bewertet– danke dir!
 
-Wenn du möchtest, kannst du nun noch einen kurzen Abschlussfragebogen ausfüllen:
+Gleich hast du es geschafft😅.
 
-👉 [Abschlussformular](https://forms.office.com/noch-ein-link)
+Bitte fülle noch diesen kurzen Abschlussfragebogen aus:
+
+👉 [Abschlussformular](https://forms.office.com/Pages/ResponsePage.aspx?id=oHqj8b2VxkW_mcmwY826GBQKxn3NUhFCm8LD9shjbppUNVpNUktQVzkxV0VJUE03TkpaQjcxVjBUMi4u)
 """)
