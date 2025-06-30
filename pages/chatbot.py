@@ -220,7 +220,7 @@ st.markdown("---")
 st.success("✅ Fertig mit dem Chatbot?")
 st.markdown("Bitte fülle nun den kurzen Fragebogen aus, um deine Erfahrung zu bewerten:")
 
-if st.button("Zum Chatbot-Fragebogen"):
+if st.button("Zum Fragebogen"):
         st.switch_page("pages/survey_chatbot.py")
 
 
