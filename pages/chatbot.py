@@ -223,7 +223,9 @@ st.markdown("Bitte fülle nun den kurzen Fragebogen aus, um deine Erfahrung zu b
 st.markdown("""
 <style>
 div.stButton > button {
-    padding: 0.6em 1.2em;
+    width: 100%;
+    min-width: 200px;
+    padding: 0.8em;
     font-size: 1.1em;
     font-weight: bold;
     border-radius: 8px;
@@ -231,12 +233,14 @@ div.stButton > button {
     background-color: #1c222b;
     color: white;
     cursor: pointer;
+    white-space: nowrap;
 }
 </style>
 """, unsafe_allow_html=True)
 
 if st.button("Zum Fragebogen"):
-        st.switch_page("pages/survey_chatbot.py")
+    st.switch_page("pages/survey_chatbot.py")
+
 
 
 
