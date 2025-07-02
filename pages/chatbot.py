@@ -236,7 +236,7 @@ st.markdown("""
         color: white;
         text-decoration: none;
     ">
-        ➡ Zum Chatbot-Fragebogen
+        ➡️ Zum Chatbot-Fragebogen
     </a>
 </div>
 """, unsafe_allow_html=True)
