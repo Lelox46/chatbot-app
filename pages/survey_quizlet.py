@@ -14,5 +14,5 @@ if st.session_state.gruppe == "quizlet_zuerst":
     if st.button("➡️ Jetzt zum Chatbot"):
         st.switch_page("pages/chatbot.py")
 else:
-    if st.button("Zur Abschluss-Seite"):
-        st.switch_page("pages/conclusion.py")
+    if st.button("➡️ Zur Abschluss-Seite"):
+        st.switch_page("pages/z_conclusion.py")
