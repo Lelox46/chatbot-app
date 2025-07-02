@@ -23,4 +23,5 @@ if st.session_state.gruppe == "chatbot_zuerst":
 
 elif st.session_state.gruppe == "quizlet_zuerst":
     st.write("Beginnen wir mit einer Quizlet Lektion. Klick auf den Button unten um loszulegen. Du kannst anschließend kurz Feedback geben und dann gehts weiter mit dem Chatbot. 😀")
-    st.page_link("pages/quizlet.py", label="Weiter zur Quizlet-Lektion")
+    if st.button("➡️ Weiter zur Quizlet-Lektion"):
+        st.switch_page("pages/quizlet.py")
