@@ -243,7 +243,7 @@ div.stButton > button.fragebogen {
 
 # Button mit Key und CSS-Klasse
 st.markdown('<div class="stButton">', unsafe_allow_html=True)
-if st.button("➡️ Zum Chatbot-Fragebogen", key="fragebogen", help="Zum Fragebogen", type="primary"):
+if st.button("➡️ Zum Chatbot-Fragebogen"):
     st.switch_page("pages/survey_chatbot.py")
 st.markdown('</div>', unsafe_allow_html=True)
 
