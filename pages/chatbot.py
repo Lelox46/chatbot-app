@@ -223,26 +223,29 @@ st.markdown("Bitte fülle nun den kurzen Fragebogen aus, um deine Erfahrung zu b
 
 #st.page_link("pages/survey_chatbot.py", label="Zum Chatbot-Fragebogen")
 
+
 st.markdown("""
-<div style="margin-top: 1.5em;">
-    <a href="/survey_chatbot" target="_self" style="
-        display: inline-block;
-        padding: 0.75em 1.5em;
-        font-size: 1.1em;
-        font-weight: bold;
-        border: 2px solid white;
-        border-radius: 8px;
-        background-color: #1c222b;
-        color: white;
-        text-decoration: none;
-    ">
-        ➡️ Zum Chatbot-Fragebogen
-    </a>
-</div>
+<style>
+.custom-button button {
+    all: unset;
+    padding: 0.75em 1.5em;
+    font-size: 1.1em;
+    font-weight: bold;
+    border-radius: 8px;
+    border: 2px solid #000;
+    background-color: #1c222b;
+    color: white;
+    cursor: pointer;
+}
+</style>
 """, unsafe_allow_html=True)
 
-#if st.button("➡️ Zum Chatbot-Fragebogen"):
-#    st.switch_page("pages/survey_chatbot.py")
+with st.container():
+    st.markdown('<div class="custom-button">', unsafe_allow_html=True)
+    if st.button("➡️ Zum Chatbot-Fragebogen", key="fragebogen_button"):
+        st.switch_page("pages/survey_chatbot.py")
+    st.markdown('</div>', unsafe_allow_html=True)
+
 
 
 
