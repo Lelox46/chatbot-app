@@ -224,27 +224,32 @@ st.markdown("Bitte fülle nun den kurzen Fragebogen aus, um deine Erfahrung zu b
 #st.page_link("pages/survey_chatbot.py", label="Zum Chatbot-Fragebogen")
 
 
+# Zuerst: Button-Styles zurücksetzen
 st.markdown("""
 <style>
-.custom-button button {
+button.fragebogen-button {
     all: unset;
     padding: 0.75em 1.5em;
     font-size: 1.1em;
     font-weight: bold;
     border-radius: 8px;
-    border: 2px solid #000;
+    border: 2px solid #fff;
     background-color: #1c222b;
     color: white;
     cursor: pointer;
+    display: inline-block;
 }
 </style>
 """, unsafe_allow_html=True)
 
-with st.container():
-    st.markdown('<div class="custom-button">', unsafe_allow_html=True)
-    if st.button("➡️ Zum Chatbot-Fragebogen", key="fragebogen_button"):
-        st.switch_page("pages/survey_chatbot.py")
-    st.markdown('</div>', unsafe_allow_html=True)
+# Dann: Den Button in HTML setzen
+st.markdown("""
+<div style="margin-top: 1.5em;">
+    <form action="/survey_chatbot">
+        <button class="fragebogen-button" type="submit">➡️ Zum Chatbot-Fragebogen</button>
+    </form>
+</div>
+""", unsafe_allow_html=True)
 
 
 
