@@ -217,10 +217,30 @@ with st.form(key="chat_form", clear_on_submit=True):
 
 
 st.markdown("---")
+
 st.success("✅ Fertig mit dem Chatbot?")
 st.markdown("Bitte fülle nun den kurzen Fragebogen aus, um deine Erfahrung zu bewerten:")
 
-st.page_link("pages/survey_chatbot.py", label="Zum Chatbot-Fragebogen")
+#st.page_link("pages/survey_chatbot.py", label="Zum Chatbot-Fragebogen")
+
+st.markdown("""
+    <div style="text-align: center; margin-top: 1.5em;">
+        <a href="/pages/survey_chatbot" target="_self" style="
+            display: inline-block;
+            padding: 0.75em 1.5em;
+            font-size: 1.1em;
+            font-weight: bold;
+            border: 2px solid white;
+            border-radius: 8px;
+            background-color: #1c222b;
+            color: white;
+            text-decoration: none;
+            transition: background-color 0.3s ease;
+        ">
+            Zum Chatbot-Fragebogen
+        </a>
+    </div>
+""", unsafe_allow_html=True)
 
 
 
