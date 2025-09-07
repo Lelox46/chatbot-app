@@ -40,7 +40,7 @@ def set_background(png_filename):
     """, unsafe_allow_html=True)
 
 # Hintergrundbilder setzen
-set_background("bitcoin_bg.png")
+set_background("quester_background.png")
 bg2 = get_base64_image(get_asset_path("Logo_text.png"))
 st.markdown(f"""
     <style>
