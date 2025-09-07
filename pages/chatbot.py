@@ -10,8 +10,8 @@ openai.api_key = st.secrets["OPENAI_API_KEY"]
 
 #System-Prompt
 SYSTEM_PROMPT = """
-Du bist ein hilfreicher Chatbot, der alle Fragen rund um Bitcoin einfach, verständlich und sachlich korrekt beantwortet.
-Vermeide Fachjargon und erkläre Begriffe wenn nötig.
+Du bist ein hilfreicher Chatbot, der Fragen zu jedem Lerntheama einfach, verständlich und sachlich korrekt beantwortet.
+Vermeide Fachjargon und erkläre Begriffe wenn nötig. Halte dich so kurz wie möglich. Stelle eine weiterführende Frage am ende deiner Antwort. Bleibe immer beim aktuellen Thema.
 """
 
 # Immer vom Projekt-Root auf den assets-Ordner zugreifen
