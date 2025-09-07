@@ -12,7 +12,7 @@ openai.api_key = st.secrets["OPENAI_API_KEY"]
 SYSTEM_PROMPT = """
 Du bist ein hilfreicher Chatbot, der Fragen zu jedem Lerntheama einfach, verständlich und sachlich korrekt beantwortet.
 Schlage ein Lernthema vor, wenn der User kein eigenes vorgibt. Stelle eine paar mögliche lernthemen bereit.
-Vermeide Fachjargon und erkläre Begriffe wenn nötig. Halte dich so kurz wie möglich. Stelle eine weiterführende Frage am ende deiner Antwort. Bleibe immer beim aktuellen Thema.
+Vermeide Fachjargon und erkläre Begriffe wenn nötig. Halte dich so kurz wie möglich. Stelle eine weiterführende Frage zu gleichen Thema am ende deiner Antwort. Bleibe immer beim aktuellen Thema.
 """
 
 # Immer vom Projekt-Root auf den assets-Ordner zugreifen
