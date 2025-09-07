@@ -41,7 +41,7 @@ def set_background(png_filename):
 
 # Hintergrundbilder setzen
 set_background("bitcoin_bg.png")
-bg2 = get_base64_image(get_asset_path("bitcoin_banner.jpg"))
+bg2 = get_base64_image(get_asset_path("Logo_text.png"))
 st.markdown(f"""
     <style>
     [data-testid="stAppViewContainer"] > .main {{
@@ -80,10 +80,10 @@ st.markdown("""
 # ────────────────────────────────────────────────
 # UI Titel
 # ────────────────────────────────────────────────
-st.set_page_config(page_title="Bitcoin Chatbot")
-st.markdown("<h1 style='text-align:center;'>Bitcoin Chatbot</h1>", unsafe_allow_html=True)
-st.image(get_asset_path("bitcoin_banner.jpg"), use_container_width=True)
-st.markdown("<h3 style='text-align:center;'>Lerne alles über Bitcoin! Stell mir einfach eine Frage!</h3>", unsafe_allow_html=True)
+st.set_page_config(page_title="Quester AI")
+st.markdown("<h1 style='text-align:center;'>Quester AI</h1>", unsafe_allow_html=True)
+st.image(get_asset_path("Logo_text.png"), use_container_width=True)
+st.markdown("<h3 style='text-align:center;'>Dein persönlicher Lerncoach! Was willst du wissen?</h3>", unsafe_allow_html=True)
 st.markdown("---")
 
 # ────────────────────────────────────────────────
@@ -217,10 +217,10 @@ with st.form(key="chat_form", clear_on_submit=True):
         st.rerun()
 
 
-st.markdown("---")
+#st.markdown("---")
 
-st.success("✅ Fertig mit dem Chatbot?")
-st.markdown("Bitte fülle nun den kurzen Fragebogen aus, um deine Erfahrung zu bewerten:")
+#st.success("✅ Fertig mit dem Chatbot?")
+#st.markdown("Bitte fülle nun den kurzen Fragebogen aus, um deine Erfahrung zu bewerten:")
 
 #st.page_link("pages/survey_chatbot.py", label="Zum Chatbot-Fragebogen")
 
