@@ -100,8 +100,8 @@ for key in ["user_just_sent","user_input_value","bot_typing","pending_bot_respon
 # ────────────────────────────────────────────────
 with st.container():
     for msg in st.session_state.messages[1:]:
-        sender = "Bot" if msg["role"] == "assistant" else "User"
-        css = "bot" if sender == "Bot" else "user"
+        sender = "Quester" if msg["role"] == "assistant" else "User"
+        css = "bot" if sender == "Quester" else "user"
         st.markdown(
             f"<div class='chat-bubble {css}'><strong>{sender}:</strong><br>{msg['content']}</div>",
             unsafe_allow_html=True
