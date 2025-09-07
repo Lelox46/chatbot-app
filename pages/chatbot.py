@@ -206,7 +206,7 @@ div[data-testid="stButton"] > button {
 with st.form(key="chat_form", clear_on_submit=True):
     col1, col2 = st.columns([0.93, 0.07])
     with col1:
-        user_input = st.text_input("", key="input_box", placeholder="Frag mich was über Bitcoin…", label_visibility="collapsed")
+        user_input = st.text_input("", key="input_box", placeholder="Was willst du lernen?", label_visibility="collapsed")
     with col2:
         send = st.form_submit_button("➤")
 
