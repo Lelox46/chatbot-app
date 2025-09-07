@@ -81,7 +81,7 @@ st.markdown("""
 # UI Titel
 # ────────────────────────────────────────────────
 st.set_page_config(page_title="Quester AI")
-st.markdown("<h1 style='text-align:center;'>Quester AI</h1>", unsafe_allow_html=True)
+#st.markdown("<h1 style='text-align:center;'>Quester AI</h1>", unsafe_allow_html=True)
 st.image(get_asset_path("Logo_text.png"), use_container_width=True)
 st.markdown("<h3 style='text-align:center;'>Dein persönlicher Lerncoach! Was willst du wissen?</h3>", unsafe_allow_html=True)
 st.markdown("---")
