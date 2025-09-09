@@ -3,50 +3,93 @@ import base64
 from pathlib import Path
 
 import streamlit as st
-import openai
+
+# Falls du die neue OpenAI-API nutzt:
+try:
+    from openai import OpenAI
+    _has_new_openai = True
+except Exception:
+    _has_new_openai = False
+import openai  # bleibt als Fallback importiert
+
 
 # ────────────────────────────────────────────────
 # Page config MUSS vor jeder Ausgabe stehen
 # ────────────────────────────────────────────────
-st.set_page_config(page_title="Quester AI")
+st.set_page_config(
+    page_title="Quester AI",
+    layout="wide",
+    initial_sidebar_state="collapsed",
+)
 
 # ────────────────────────────────────────────────
-# OpenAI-API-Key laden
+# Streamlit UI-Elemente ausblenden (oben/unten/rechts)
 # ────────────────────────────────────────────────
-# Entweder hier aus st.secrets...
-openai.api_key = st.secrets["OPENAI_OPENAI_API_KEY"] if "OPENAI_OPENAI_API_KEY" in st.secrets else st.secrets["OPENAI_API_KEY"]
+st.markdown("""
+<style>
+/* Menü oben rechts (Hamburger, inkl. GitHub-Link) */
+#MainMenu {visibility: hidden;}
 
-# Für das neuere Client-Objekt:
-# - Wenn du noch die alte openai==0.x nutzt, bleibt es kompatibel, da wir nur .chat.completions.create verwenden.
-try:
-    client = openai.OpenAI(api_key=openai.api_key)
-except Exception:
-    # Fallback: Einige ältere Pakete haben kein OpenAI()-Objekt – wir verwenden dann unten direkt openai.ChatCompletion.create
+/* Standard-Header-Leiste komplett ausblenden */
+div[data-testid="stHeader"] {display: none;}
+
+/* Footer unten links */
+footer {visibility: hidden;}
+
+/* Toolbar / Status-Widgets / User-Badge unten rechts */
+[data-testid="stStatusWidget"] {visibility: hidden;}
+[data-testid="stToolbar"] {visibility: hidden;}
+
+/* Optional: Sidebar komplett ausblenden (inkl. Collapser) */
+section[data-testid="stSidebar"] {display: none;}
+div[data-testid="stSidebarNav"] {display: none;}
+</style>
+""", unsafe_allow_html=True)
+
+
+# ────────────────────────────────────────────────
+# OpenAI-API-Key + Client
+# ────────────────────────────────────────────────
+# Aus st.secrets laden (benenne bei dir ggf. korrekt)
+api_key = st.secrets.get("OPENAI_API_KEY") or st.secrets.get("OPENAI_OPENAI_API_KEY")
+if not api_key:
+    st.stop()
+
+if _has_new_openai:
+    try:
+        client = OpenAI(api_key=api_key)
+    except Exception:
+        client = None
+else:
     client = None
+openai.api_key = api_key  # Fallback für ältere Pakete
+
 
 # ────────────────────────────────────────────────
 # System-Prompt
 # ────────────────────────────────────────────────
 SYSTEM_PROMPT = """
 Du bist ein hilfreicher Chatbot, der Fragen zu jedem Lernthema einfach, verständlich und sachlich korrekt beantwortet.
-Schlage ein Lernthema vor, wenn der User kein eigenes vorgibt. Stelle ein paar mögliche Lernthemen bereit.
-Vermeide Fachjargon und erkläre Begriffe wenn nötig. Halte dich so kurz wie möglich. Stelle am Ende eine weiterführende Frage zum gleichen Thema. Bleibe immer beim aktuellen Thema.
+Schlage ein Lernthema vor, wenn der User kein eigenes vorgibt und nenne ein paar mögliche Lernthemen.
+Vermeide Fachjargon und erkläre Begriffe wenn nötig. Halte dich so kurz wie möglich.
+Stelle am Ende eine weiterführende Frage zum gleichen Thema. Bleibe immer beim aktuellen Thema.
 """.strip()
 
+
 # ────────────────────────────────────────────────
-# Assets finden (robust, egal wo das Skript liegt)
+# Assets finden (robust, egal ob Datei im Root oder in /pages liegt)
 # ────────────────────────────────────────────────
 THIS_FILE = Path(__file__).resolve()
 
 def find_assets_dir(start: Path, max_up: int = 4) -> Path:
-    """Laufe max_up Ebenen nach oben, bis ein 'assets' Ordner gefunden wird."""
+    """Gehe nach oben, bis 'assets' gefunden wird (max_up Ebenen)."""
     p = start
     for _ in range(max_up + 1):
         cand = p / "assets"
         if cand.exists() and cand.is_dir():
             return cand
         p = p.parent
-    raise FileNotFoundError("Konnte keinen 'assets' Ordner finden. Erwartet: <projekt> / assets / ...")
+    raise FileNotFoundError("Konnte keinen 'assets' Ordner finden. Erwartet: <projekt>/assets/...")
 
 ASSET_DIR = find_assets_dir(THIS_FILE.parent)
 
@@ -62,11 +105,11 @@ def get_base64_image(path: str) -> str:
 
 def set_background(png_filename: str):
     try:
-        bg = get_base64_image(get_asset_path(png_filename))
+        bg64 = get_base64_image(get_asset_path(png_filename))
         st.markdown(f"""
             <style>
             [data-testid="stAppViewContainer"] {{
-                background-image: url("data:image/png;base64,{bg}");
+                background-image: url("data:image/png;base64,{bg64}");
                 background-size: cover;
                 background-repeat: no-repeat;
                 background-attachment: fixed;
@@ -75,6 +118,7 @@ def set_background(png_filename: str):
         """, unsafe_allow_html=True)
     except FileNotFoundError as e:
         st.warning(str(e))
+
 
 # ────────────────────────────────────────────────
 # Hintergründe / Branding
@@ -96,8 +140,9 @@ try:
 except FileNotFoundError as e:
     st.warning(str(e))
 
+
 # ────────────────────────────────────────────────
-# Chat-Style (fix: korrekte Hex-Farben)
+# Chat-Style
 # ────────────────────────────────────────────────
 st.markdown("""
 <style>
@@ -173,8 +218,9 @@ div.stButton > button.fragebogen {
 </style>
 """, unsafe_allow_html=True)
 
+
 # ────────────────────────────────────────────────
-# UI Header
+# Header / Branding
 # ────────────────────────────────────────────────
 try:
     st.image(get_asset_path("Logo_text.png"), use_container_width=True)
@@ -184,6 +230,7 @@ except FileNotFoundError as e:
 st.markdown("<h3 style='text-align:center;'>Dein persönlicher Lerncoach! Was willst du wissen?</h3>", unsafe_allow_html=True)
 st.markdown("---")
 
+
 # ────────────────────────────────────────────────
 # Session-State Setup
 # ────────────────────────────────────────────────
@@ -192,6 +239,7 @@ if "messages" not in st.session_state:
 for key in ["user_just_sent", "user_input_value", "bot_typing", "pending_bot_response", "awaiting_typing_display"]:
     if key not in st.session_state:
         st.session_state[key] = False
+
 
 # ────────────────────────────────────────────────
 # Verlauf anzeigen
@@ -207,6 +255,7 @@ with st.container():
     if st.session_state.bot_typing and not st.session_state.pending_bot_response:
         st.markdown("<div class='chat-bubble typing'><strong>Quester:</strong><br>Thinking…</div>", unsafe_allow_html=True)
 
+
 # ────────────────────────────────────────────────
 # PHASE 1.5: "Thinking..." sichtbar machen
 # ────────────────────────────────────────────────
@@ -216,29 +265,35 @@ if st.session_state.awaiting_typing_display:
     st.session_state.user_just_sent = True
     st.rerun()
 
+
 # ────────────────────────────────────────────────
 # PHASE 2: Antwort generieren
 # ────────────────────────────────────────────────
+def _call_openai(messages):
+    # Neuer Client?
+    if client is not None and hasattr(client, "chat") and hasattr(client.chat, "completions"):
+        resp = client.chat.completions.create(
+            model="gpt-3.5-turbo",
+            messages=messages
+        )
+        return resp.choices[0].message.content
+
+    # Legacy-Fallback
+    resp = openai.ChatCompletion.create(
+        model="gpt-3.5-turbo",
+        messages=messages
+    )
+    return resp["choices"][0]["message"]["content"]
+
 if st.session_state.user_just_sent:
     st.session_state.user_just_sent = False
     try:
-        if client is not None and hasattr(client, "chat") and hasattr(client.chat, "completions"):
-            response = client.chat.completions.create(
-                model="gpt-3.5-turbo",
-                messages=st.session_state.messages
-            )
-            st.session_state.pending_bot_response = response.choices[0].message.content
-        else:
-            # Fallback für ältere Pakete
-            response = openai.ChatCompletion.create(
-                model="gpt-3.5-turbo",
-                messages=st.session_state.messages
-            )
-            st.session_state.pending_bot_response = response["choices"][0]["message"]["content"]
+        st.session_state.pending_bot_response = _call_openai(st.session_state.messages)
     except Exception as e:
         st.session_state.messages.append({"role": "assistant", "content": f"Fehler bei der API-Abfrage: {e}"})
         st.session_state.bot_typing = False
     st.rerun()
+
 
 # ────────────────────────────────────────────────
 # PHASE 3: "Typing"-Animation und Ausgabe
@@ -256,6 +311,7 @@ if st.session_state.pending_bot_response:
     placeholder.empty()
     st.rerun()
 
+
 # ────────────────────────────────────────────────
 # Eingabefeld
 # ────────────────────────────────────────────────
@@ -271,9 +327,3 @@ with st.form(key="chat_form", clear_on_submit=True):
         st.session_state.user_input_value = user_input
         st.session_state.awaiting_typing_display = True
         st.rerun()
-
-# ────────────────────────────────────────────────
-# (Optional) Fragebogen-Button – derzeit auskommentiert
-# ────────────────────────────────────────────────
-# if st.button("➡️ Zum Chatbot-Fragebogen", key="fragebogen", help="Zum Fragebogen"):
-#     st.switch_page("pages/survey_chatbot.py")
