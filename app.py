@@ -4,55 +4,67 @@ from pathlib import Path
 
 import streamlit as st
 
-# Falls du die neue OpenAI-API nutzt:
+# Versuche neue OpenAI-API (falls installiert), sonst Fallback
 try:
     from openai import OpenAI
     _has_new_openai = True
 except Exception:
     _has_new_openai = False
-import openai  # bleibt als Fallback importiert
-
+import openai  # Fallback bleibt
 
 # ────────────────────────────────────────────────
-# Page config MUSS vor jeder Ausgabe stehen
+# Page config (muss vor jeglicher Ausgabe stehen)
 # ────────────────────────────────────────────────
 st.set_page_config(
     page_title="Quester AI",
-    layout="wide",
+    layout="centered",                  # schmal & zentriert
     initial_sidebar_state="collapsed",
 )
 
 # ────────────────────────────────────────────────
-# Streamlit UI-Elemente ausblenden (oben/unten/rechts)
+# Streamlit-UI ausblenden + App-Breite begrenzen
 # ────────────────────────────────────────────────
 st.markdown("""
 <style>
 /* Menü oben rechts (Hamburger, inkl. GitHub-Link) */
 #MainMenu {visibility: hidden;}
-
-/* Standard-Header-Leiste komplett ausblenden */
+/* Header-Leiste */
 div[data-testid="stHeader"] {display: none;}
-
 /* Footer unten links */
 footer {visibility: hidden;}
-
 /* Toolbar / Status-Widgets / User-Badge unten rechts */
-[data-testid="stStatusWidget"] {visibility: hidden;}
-[data-testid="stToolbar"] {visibility: hidden;}
+[data-testid="stToolbar"] {display: none !important;}
+[data-testid="stStatusWidget"] {display: none !important;}
+/* Streamlit Cloud/Share Badges (robust via mehrere Selektoren) */
+[class*="viewerBadge"] {display: none !important;}
+a[href*="streamlit.io"] {display: none !important;}
+a[href*="share.streamlit.io"] {display: none !important;}
+a[href*="streamlit.app"] {display: none !important;}
+[data-testid="stDecoration"] {display: none !important;}
+[data-testid="stBottomBar"] {display: none !important;}
+[data-testid="stDeployButton"] {display: none !important;}
+[data-testid="stBaseButton-headerNoPadding"] {display: none !important;}
 
-/* Optional: Sidebar komplett ausblenden (inkl. Collapser) */
+/* App-Breite begrenzen & zentrieren */
+.main .block-container {
+    max-width: 920px;     /* gewünschte Breite hier anpassen */
+    padding-top: 0.5rem;
+    padding-bottom: 2rem;
+    margin: 0 auto;
+}
+
+/* Optional: Sidebar komplett ausblenden */
 section[data-testid="stSidebar"] {display: none;}
 div[data-testid="stSidebarNav"] {display: none;}
 </style>
 """, unsafe_allow_html=True)
 
-
 # ────────────────────────────────────────────────
 # OpenAI-API-Key + Client
 # ────────────────────────────────────────────────
-# Aus st.secrets laden (benenne bei dir ggf. korrekt)
 api_key = st.secrets.get("OPENAI_API_KEY") or st.secrets.get("OPENAI_OPENAI_API_KEY")
 if not api_key:
+    st.error("OPENAI_API_KEY fehlt in st.secrets.")
     st.stop()
 
 if _has_new_openai:
@@ -62,8 +74,7 @@ if _has_new_openai:
         client = None
 else:
     client = None
-openai.api_key = api_key  # Fallback für ältere Pakete
-
+openai.api_key = api_key  # Legacy-Fallback
 
 # ────────────────────────────────────────────────
 # System-Prompt
@@ -74,7 +85,6 @@ Schlage ein Lernthema vor, wenn der User kein eigenes vorgibt und nenne ein paar
 Vermeide Fachjargon und erkläre Begriffe wenn nötig. Halte dich so kurz wie möglich.
 Stelle am Ende eine weiterführende Frage zum gleichen Thema. Bleibe immer beim aktuellen Thema.
 """.strip()
-
 
 # ────────────────────────────────────────────────
 # Assets finden (robust, egal ob Datei im Root oder in /pages liegt)
@@ -119,7 +129,6 @@ def set_background(png_filename: str):
     except FileNotFoundError as e:
         st.warning(str(e))
 
-
 # ────────────────────────────────────────────────
 # Hintergründe / Branding
 # ────────────────────────────────────────────────
@@ -139,7 +148,6 @@ try:
     """, unsafe_allow_html=True)
 except FileNotFoundError as e:
     st.warning(str(e))
-
 
 # ────────────────────────────────────────────────
 # Chat-Style
@@ -218,7 +226,6 @@ div.stButton > button.fragebogen {
 </style>
 """, unsafe_allow_html=True)
 
-
 # ────────────────────────────────────────────────
 # Header / Branding
 # ────────────────────────────────────────────────
@@ -230,7 +237,6 @@ except FileNotFoundError as e:
 st.markdown("<h3 style='text-align:center;'>Dein persönlicher Lerncoach! Was willst du wissen?</h3>", unsafe_allow_html=True)
 st.markdown("---")
 
-
 # ────────────────────────────────────────────────
 # Session-State Setup
 # ────────────────────────────────────────────────
@@ -239,7 +245,6 @@ if "messages" not in st.session_state:
 for key in ["user_just_sent", "user_input_value", "bot_typing", "pending_bot_response", "awaiting_typing_display"]:
     if key not in st.session_state:
         st.session_state[key] = False
-
 
 # ────────────────────────────────────────────────
 # Verlauf anzeigen
@@ -255,7 +260,6 @@ with st.container():
     if st.session_state.bot_typing and not st.session_state.pending_bot_response:
         st.markdown("<div class='chat-bubble typing'><strong>Quester:</strong><br>Thinking…</div>", unsafe_allow_html=True)
 
-
 # ────────────────────────────────────────────────
 # PHASE 1.5: "Thinking..." sichtbar machen
 # ────────────────────────────────────────────────
@@ -265,26 +269,26 @@ if st.session_state.awaiting_typing_display:
     st.session_state.user_just_sent = True
     st.rerun()
 
-
 # ────────────────────────────────────────────────
-# PHASE 2: Antwort generieren
+# OpenAI-Aufruf (neu + Legacy)
 # ────────────────────────────────────────────────
 def _call_openai(messages):
-    # Neuer Client?
     if client is not None and hasattr(client, "chat") and hasattr(client.chat, "completions"):
         resp = client.chat.completions.create(
             model="gpt-3.5-turbo",
             messages=messages
         )
         return resp.choices[0].message.content
-
-    # Legacy-Fallback
+    # Legacy
     resp = openai.ChatCompletion.create(
         model="gpt-3.5-turbo",
         messages=messages
     )
     return resp["choices"][0]["message"]["content"]
 
+# ────────────────────────────────────────────────
+# PHASE 2: Antwort generieren
+# ────────────────────────────────────────────────
 if st.session_state.user_just_sent:
     st.session_state.user_just_sent = False
     try:
@@ -293,7 +297,6 @@ if st.session_state.user_just_sent:
         st.session_state.messages.append({"role": "assistant", "content": f"Fehler bei der API-Abfrage: {e}"})
         st.session_state.bot_typing = False
     st.rerun()
-
 
 # ────────────────────────────────────────────────
 # PHASE 3: "Typing"-Animation und Ausgabe
@@ -310,7 +313,6 @@ if st.session_state.pending_bot_response:
     st.session_state.pending_bot_response = None
     placeholder.empty()
     st.rerun()
-
 
 # ────────────────────────────────────────────────
 # Eingabefeld
